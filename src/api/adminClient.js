@@ -320,18 +320,26 @@ export async function getSettings() {
   return {
     primary_color: data.themeColor,
     accent_color: data.accentColor,
+    text_color: data.textColor || '#0f172a',
+    font_family: data.fontFamily || 'Inter, system-ui, sans-serif',
     meta_title: data.seoTitle,
     meta_description: data.seoDescription,
+    meta_keywords: data.metaKeywords || '',
     google_analytics: data.googleAnalytics,
-    logo: data.logo,
+    logo: data.logo || '',
+    favicon: data.favicon || '',
     animations_enabled: data.animationsEnabled !== false,
-    // optional fields the UI may use (not in backend yet)
     school_name: data.schoolName || '',
     tagline: data.tagline || '',
     phone: data.phone || '',
     email: data.email || '',
     address: data.address || '',
     map_embed: data.mapEmbed || '',
+    facebook: data.facebook || '',
+    twitter: data.twitter || '',
+    instagram: data.instagram || '',
+    youtube: data.youtube || '',
+    linkedin: data.linkedin || '',
   };
 }
 
@@ -347,6 +355,7 @@ export function updateSettings(settings, logoFile) {
     meta_description: 'seoDescription',
     google_analytics: 'googleAnalytics',
     animations_enabled: 'animationsEnabled',
+    text_color: 'textColor',
   };
   Object.entries(map).forEach(([frontKey, backKey]) => {
     if (settings[frontKey] !== undefined && settings[frontKey] !== null) {

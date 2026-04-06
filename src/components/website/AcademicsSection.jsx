@@ -3,8 +3,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Users, Lightbulb, Palette, Dumbbell, FlaskConical, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { listAcademicPrograms } from '@/api/adminClient';
+import { getSettings, listAcademicPrograms } from '@/api/adminClient';
 import { useQuery } from '@tanstack/react-query';
+import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 const iconMap = {
   BookOpen, Users, Lightbulb, Palette, Dumbbell, FlaskConical
@@ -15,6 +16,12 @@ export default function AcademicsSection() {
     queryKey: ['academicPrograms'],
     queryFn: () => listAcademicPrograms(),
   });
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
+  const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
+  const accentColor = settings.accent_color || DEFAULT_ACCENT;
 
   const defaultPrograms = [
     {
@@ -67,11 +74,11 @@ export default function AcademicsSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 bg-[#1E3A8A]/10 text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+          <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(primaryColor, 0.1, DEFAULT_PRIMARY), color: primaryColor }}>
             Our Programs
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 font-['Poppins']">
-            Academic <span className="text-[#1E3A8A]">Excellence</span>
+            Academic <span style={{ color: primaryColor }}>Excellence</span>
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Comprehensive education programs designed to nurture every aspect of your child's development
@@ -93,17 +100,17 @@ export default function AcademicsSection() {
                 className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden"
               >
                 {/* Hover Background Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A8A] to-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(135deg, ${primaryColor}, ${withAlpha(primaryColor, 0.75, DEFAULT_PRIMARY)})` }} />
                 
                 {/* Content */}
                 <div className="relative z-10">
                   {/* Icon */}
-                  <div className="w-16 h-16 bg-[#FACC15] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white transition-colors">
-                    <IconComponent className="w-8 h-8 text-[#1E3A8A]" />
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white transition-colors" style={{ backgroundColor: accentColor }}>
+                    <IconComponent className="w-8 h-8" style={{ color: primaryColor }} />
                   </div>
 
                   {/* Grades Badge */}
-                  <span className="inline-block px-3 py-1 bg-[#1E3A8A]/10 text-[#1E3A8A] text-xs font-semibold rounded-full mb-4 group-hover:bg-white/20 group-hover:text-white transition-colors">
+                  <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-4 group-hover:bg-white/20 group-hover:text-white transition-colors" style={{ backgroundColor: withAlpha(primaryColor, 0.1, DEFAULT_PRIMARY), color: primaryColor }}>
                     {program.grades}
                   </span>
 
@@ -120,7 +127,8 @@ export default function AcademicsSection() {
                   {/* Learn More Link */}
                   <Link
                     to={'/academics'}
-                    className="inline-flex items-center gap-2 text-[#1E3A8A] font-semibold group-hover:text-[#FACC15] transition-colors"
+                    className="inline-flex items-center gap-2 font-semibold transition-colors"
+                    style={{ color: primaryColor }}
                   >
                     Learn More
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -140,7 +148,8 @@ export default function AcademicsSection() {
         >
           <Link
             to={'/academics'}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#1E3A8A] text-white font-semibold rounded-full hover:bg-[#1E40AF] transition-all hover:shadow-lg hover:-translate-y-0.5 group"
+            className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-lg hover:-translate-y-0.5 group"
+            style={{ backgroundColor: primaryColor }}
           >
             View All Programs
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

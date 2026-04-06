@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { listBanners } from '@/api/adminClient';
+import { getSettings, listBanners } from '@/api/adminClient';
 import { useQuery } from '@tanstack/react-query';
 
 export default function HeroSection() {
@@ -13,8 +13,16 @@ export default function HeroSection() {
     queryKey: ['banners'],
     queryFn: () => listBanners(),
   });
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
 
   const activeBanners = banners.filter(b => b.is_active);
+  const schoolName = settings.school_name || 'Malhotra Public School';
+  const tagline = settings.tagline || 'Learning Today, Leading Tomorrow';
+  const primaryColor = settings.primary_color || '#1E3A8A';
+  const accentColor = settings.accent_color || '#FACC15';
 
   useEffect(() => {
     if (activeBanners.length <= 1) return;
@@ -36,13 +44,13 @@ export default function HeroSection() {
 
   if (activeBanners.length === 0) {
     return (
-      <section className="relative h-[90vh] min-h-[600px] bg-[#1E3A8A] flex items-center justify-center">
+      <section className="relative h-[90vh] min-h-[600px] flex items-center justify-center" style={{ backgroundColor: primaryColor }}>
         <div className="text-center text-white">
           <h1 className="text-5xl md:text-7xl font-bold font-['Poppins'] mb-4">
-            Malhotra Public School
+            {schoolName}
           </h1>
           <p className="text-xl md:text-2xl text-gray-200">
-            Learning Today, Leading Tomorrow
+            {tagline}
           </p>
         </div>
       </section>
@@ -71,7 +79,7 @@ export default function HeroSection() {
               />
               
               {/* Gradient Overlays */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A8A]/90 via-[#1E3A8A]/60 to-transparent" />
+              <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${primaryColor}E6, ${primaryColor}99, transparent)` }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
               {/* Content */}
@@ -82,7 +90,7 @@ export default function HeroSection() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.6 }}
                   >
-                    <span className="inline-block px-4 py-2 bg-[#FACC15] text-[#1E3A8A] text-sm font-semibold rounded-full mb-6">
+                    <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-6" style={{ backgroundColor: accentColor, color: primaryColor }}>
                       Established 2008
                     </span>
                   </motion.div>
@@ -93,7 +101,7 @@ export default function HeroSection() {
                     transition={{ delay: 0.4, duration: 0.6 }}
                     className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-['Poppins'] leading-tight"
                   >
-                    {banner.title || 'Welcome to Malhotra Public School'}
+                    {banner.title || `Welcome to ${schoolName}`}
                   </motion.h1>
 
                   <motion.p
@@ -102,7 +110,7 @@ export default function HeroSection() {
                     transition={{ delay: 0.5, duration: 0.6 }}
                     className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed"
                   >
-                    {banner.subtitle || 'Nurturing minds, shaping futures. Where excellence meets opportunity.'}
+                    {banner.subtitle || tagline}
                   </motion.p>
 
                   <motion.div
@@ -113,14 +121,15 @@ export default function HeroSection() {
                   >
                     <Link
                       to={banner.cta_primary_link ? (banner.cta_primary_link.replace('/', '')) : 'admissions'}
-                      className="inline-flex items-center gap-2 px-8 py-4 bg-[#FACC15] text-[#1E3A8A] font-semibold rounded-full hover:bg-[#FDE047] transition-all hover:shadow-xl hover:-translate-y-1 group"
+                      className="inline-flex items-center gap-2 px-8 py-4 font-semibold rounded-full transition-all hover:shadow-xl hover:-translate-y-1 group"
+                      style={{ backgroundColor: accentColor, color: primaryColor }}
                     >
                       {banner.cta_primary_text || 'Apply Now'}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                     <Link
                       to={banner.cta_secondary_link ? (banner.cta_secondary_link.replace('/', '')) : 'about'}
-                      className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-[#1E3A8A] transition-all"
+                      className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white text-white font-semibold rounded-full hover:bg-white transition-all"
                     >
                       {banner.cta_secondary_text || 'Learn More'}
                     </Link>
@@ -159,9 +168,10 @@ export default function HeroSection() {
               onClick={() => setCurrentSlide(index)}
               className={`h-2 rounded-full transition-all ${
                 index === currentSlide
-                  ? 'w-8 bg-[#FACC15]'
+                  ? 'w-8'
                   : 'w-2 bg-white/50 hover:bg-white'
               }`}
+              style={index === currentSlide ? { backgroundColor: accentColor } : undefined}
             />
           ))}
         </div>

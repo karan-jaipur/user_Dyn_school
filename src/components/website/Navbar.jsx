@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone, Mail, GraduationCap } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getUserPages } from "@/api/adminClient";
+import { getSettings, getUserPages } from "@/api/adminClient";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,6 +12,17 @@ export default function Navbar() {
     queryKey: ["user-pages"],
     queryFn: getUserPages,
   });
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettings,
+  });
+
+  const schoolName = settings.school_name || "Malhotra Public School";
+  const tagline = settings.tagline || "Learning Today, Leading Tomorrow";
+  const phone = settings.phone || "+91 9876543210";
+  const email = settings.email || "info@malhotrapublicschool.edu";
+  const primaryColor = settings.primary_color || "#1E3A8A";
+  const accentColor = settings.accent_color || "#FACC15";
 
   const navItems = [
     { id: "home", label: "Home", link: "/" },
@@ -30,16 +41,16 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="bg-[#1E3A8A] text-white py-2 hidden md:block">
+      <div className="py-2 hidden md:block text-white" style={{ backgroundColor: primaryColor }}>
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center text-sm">
           <div className="flex items-center gap-6">
-            <a href="tel:+919876543210" className="flex items-center gap-2 hover:text-[#FACC15]">
+            <a href={`tel:${phone}`} className="flex items-center gap-2" style={{ color: "white" }}>
               <Phone className="w-4 h-4" />
-              +91 9876543210
+              {phone}
             </a>
-            <a href="mailto:info@malhotrapublicschool.edu" className="flex items-center gap-2 hover:text-[#FACC15]">
+            <a href={`mailto:${email}`} className="flex items-center gap-2" style={{ color: "white" }}>
               <Mail className="w-4 h-4" />
-              info@malhotrapublicschool.edu
+              {email}
             </a>
           </div>
           <div className="text-white/80">Home is fixed. Other pages come from the CMS.</div>
@@ -56,12 +67,16 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-20">
             <Link to="/" className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-[#1E3A8A] rounded-full flex items-center justify-center">
-                <GraduationCap className="w-7 h-7 text-[#FACC15]" />
-              </div>
+              {settings.logo ? (
+                <img src={settings.logo} alt={schoolName} className="h-12 w-12 rounded-full object-cover shadow-sm" />
+              ) : (
+                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: primaryColor }}>
+                  <GraduationCap className="w-7 h-7" style={{ color: accentColor }} />
+                </div>
+              )}
               <div>
-                <h1 className="font-bold text-[#1E3A8A] text-lg">Malhotra Public School</h1>
-                <p className="text-xs text-gray-500">Learning Today, Leading Tomorrow</p>
+                <h1 className="font-bold text-lg" style={{ color: primaryColor }}>{schoolName}</h1>
+                <p className="text-xs text-gray-500">{tagline}</p>
               </div>
             </Link>
 
@@ -70,7 +85,7 @@ export default function Navbar() {
                 <Link
                   key={item.id}
                   to={item.link}
-                  className="px-4 py-2 text-gray-700 hover:text-[#1E3A8A] font-medium"
+                  className="px-4 py-2 text-gray-700 font-medium"
                 >
                   {item.label}
                 </Link>
@@ -79,9 +94,9 @@ export default function Navbar() {
 
             <button className="lg:hidden" onClick={() => setIsMobileMenuOpen((open) => !open)}>
               {isMobileMenuOpen ? (
-                <X className="w-6 h-6 text-[#1E3A8A]" />
+                <X className="w-6 h-6" style={{ color: primaryColor }} />
               ) : (
-                <Menu className="w-6 h-6 text-[#1E3A8A]" />
+                <Menu className="w-6 h-6" style={{ color: primaryColor }} />
               )}
             </button>
           </div>

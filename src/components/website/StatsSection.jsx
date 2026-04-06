@@ -2,8 +2,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Users, Award, BookOpen, Calendar, GraduationCap, Trophy, Building, Star } from 'lucide-react';
-import { listStatistics } from '@/api/adminClient';
+import { getSettings, listStatistics } from '@/api/adminClient';
 import { useQuery } from '@tanstack/react-query';
+import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 const iconMap = {
   Users, Award, BookOpen, Calendar, GraduationCap, Trophy, Building, Star
@@ -48,6 +49,12 @@ export default function StatsSection() {
     queryKey: ['stats'],
     queryFn: () => listStatistics(),
   });
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
+  const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
+  const accentColor = settings.accent_color || DEFAULT_ACCENT;
 
   const defaultStats = [
     { label: 'Students Enrolled', value: 850, suffix: '+', icon: 'Users' },
@@ -59,7 +66,7 @@ export default function StatsSection() {
   const displayStats = stats.length > 0 ? stats : defaultStats;
 
   return (
-    <section ref={ref} className="relative py-20 bg-[#1E3A8A] overflow-hidden">
+    <section ref={ref} className="relative py-20 overflow-hidden" style={{ backgroundColor: primaryColor }}>
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full" 
@@ -70,8 +77,8 @@ export default function StatsSection() {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-[#FACC15]/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#3B82F6]/20 rounded-full blur-3xl" />
+      <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT) }} />
+      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: withAlpha(primaryColor, 0.25, DEFAULT_PRIMARY) }} />
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         <motion.div
@@ -80,7 +87,7 @@ export default function StatsSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 bg-[#FACC15]/20 text-[#FACC15] text-sm font-semibold rounded-full mb-4">
+          <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT), color: accentColor }}>
             Our Achievements
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-white font-['Poppins']">
@@ -102,9 +109,9 @@ export default function StatsSection() {
                 className="text-center group"
               >
                 <div className="relative inline-flex items-center justify-center mb-4">
-                  <div className="absolute w-20 h-20 bg-[#FACC15]/20 rounded-full group-hover:scale-110 transition-transform" />
-                  <div className="relative w-16 h-16 bg-[#FACC15] rounded-full flex items-center justify-center">
-                    <IconComponent className="w-8 h-8 text-[#1E3A8A]" />
+                  <div className="absolute w-20 h-20 rounded-full group-hover:scale-110 transition-transform" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT) }} />
+                  <div className="relative w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: accentColor }}>
+                    <IconComponent className="w-8 h-8" style={{ color: primaryColor }} />
                   </div>
                 </div>
                 <div className="text-4xl md:text-5xl font-bold text-white mb-2 font-['Poppins']">

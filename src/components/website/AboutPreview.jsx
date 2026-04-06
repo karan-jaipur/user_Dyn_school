@@ -3,9 +3,19 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ArrowRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getSettings } from '@/api/adminClient';
+import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 // import { createPageUrl } from '@/utils';
 
 export default function AboutPreview() {
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
+  const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
+  const accentColor = settings.accent_color || DEFAULT_ACCENT;
+
   const highlights = [
     'CBSE Affiliated School',
     'Modern Smart Classrooms',
@@ -37,15 +47,15 @@ export default function AboutPreview() {
                 />
                 {/* Play Button Overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <button className="w-20 h-20 bg-[#FACC15] rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                    <Play className="w-8 h-8 text-[#1E3A8A] ml-1" fill="currentColor" />
+                  <button className="w-20 h-20 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform" style={{ backgroundColor: accentColor }}>
+                    <Play className="w-8 h-8 ml-1" style={{ color: primaryColor }} fill="currentColor" />
                   </button>
                 </div>
               </div>
 
               {/* Decorative Elements */}
-              <div className="absolute -bottom-6 -right-6 w-72 h-72 bg-[#1E3A8A]/10 rounded-2xl -z-10" />
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#FACC15]/30 rounded-full -z-10" />
+              <div className="absolute -bottom-6 -right-6 w-72 h-72 rounded-2xl -z-10" style={{ backgroundColor: withAlpha(primaryColor, 0.1, DEFAULT_PRIMARY) }} />
+              <div className="absolute -top-6 -left-6 w-32 h-32 rounded-full -z-10" style={{ backgroundColor: withAlpha(accentColor, 0.3, DEFAULT_ACCENT) }} />
 
               {/* Experience Badge */}
               <motion.div
@@ -53,7 +63,8 @@ export default function AboutPreview() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 }}
-                className="absolute -bottom-8 left-8 bg-[#1E3A8A] text-white p-6 rounded-2xl shadow-xl z-20"
+                className="absolute -bottom-8 left-8 text-white p-6 rounded-2xl shadow-xl z-20"
+                style={{ backgroundColor: primaryColor }}
               >
                 <div className="text-4xl font-bold font-['Poppins']">18+</div>
                 <div className="text-sm text-gray-300">Years of<br />Excellence</div>
@@ -68,13 +79,13 @@ export default function AboutPreview() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-block px-4 py-2 bg-[#FACC15]/20 text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT), color: primaryColor }}>
               About Us
             </span>
 
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 font-['Poppins'] leading-tight">
               Nurturing Young Minds Since{' '}
-              <span className="text-[#1E3A8A]">2008</span>
+              <span style={{ color: primaryColor }}>2008</span>
             </h2>
 
             <p className="text-gray-600 text-lg mb-6 leading-relaxed">
@@ -100,7 +111,7 @@ export default function AboutPreview() {
                   transition={{ delay: index * 0.1 }}
                   className="flex items-center gap-3"
                 >
-                  <CheckCircle2 className="w-5 h-5 text-[#FACC15] flex-shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 flex-shrink-0" style={{ color: accentColor }} />
                   <span className="text-gray-700">{item}</span>
                 </motion.div>
               ))}
@@ -110,14 +121,16 @@ export default function AboutPreview() {
             <div className="flex flex-wrap gap-4">
               <Link
                 to={'about'}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-[#1E3A8A] text-white font-semibold rounded-full hover:bg-[#1E40AF] transition-all hover:shadow-lg hover:-translate-y-0.5 group"
+                className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-lg hover:-translate-y-0.5 group"
+                style={{ backgroundColor: primaryColor }}
               >
                 Discover More
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to={'contact'}
-                className="inline-flex items-center gap-2 px-8 py-4 border-2 border-[#1E3A8A] text-[#1E3A8A] font-semibold rounded-full hover:bg-[#1E3A8A] hover:text-white transition-all"
+                className="inline-flex items-center gap-2 px-8 py-4 border-2 font-semibold rounded-full transition-all"
+                style={{ borderColor: primaryColor, color: primaryColor }}
               >
                 Contact Us
               </Link>

@@ -43,6 +43,12 @@
 
 :root {
   --radius: 0.625rem;
+  --site-primary: #1E3A8A;
+  --site-accent: #FACC15;
+  --site-text: #0f172a;
+  --site-heading: #0f172a;
+  --site-muted-text: #334155;
+  --site-font-family: Inter, system-ui, sans-serif;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -116,7 +122,40 @@
   }
   body {
     @apply bg-background text-foreground;
+    color: var(--site-text);
+    font-family: var(--site-font-family);
   }
+}
+
+[data-site-theme="true"] {
+  color: var(--site-text);
+}
+
+[data-site-theme="true"] h1,
+[data-site-theme="true"] h2,
+[data-site-theme="true"] h3,
+[data-site-theme="true"] h4,
+[data-site-theme="true"] h5,
+[data-site-theme="true"] h6 {
+  color: var(--site-heading);
+}
+
+[data-site-theme="true"] .text-gray-900,
+[data-site-theme="true"] .text-slate-900,
+[data-site-theme="true"] .text-slate-800,
+[data-site-theme="true"] .text-gray-800 {
+  color: var(--site-heading) !important;
+}
+
+[data-site-theme="true"] .text-gray-700,
+[data-site-theme="true"] .text-slate-700,
+[data-site-theme="true"] .text-gray-600,
+[data-site-theme="true"] .text-slate-600,
+[data-site-theme="true"] .text-gray-500,
+[data-site-theme="true"] .text-slate-500,
+[data-site-theme="true"] .text-gray-400,
+[data-site-theme="true"] .text-slate-400 {
+  color: var(--site-muted-text) !important;
 }
 
 @media (max-width:768px) {

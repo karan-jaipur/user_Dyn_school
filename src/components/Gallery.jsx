@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react';
-import { listGalleries, listGalleryCategories } from '@/api/adminClient';
+import { getSettings, listGalleries, listGalleryCategories } from '@/api/adminClient';
 import { useQuery } from '@tanstack/react-query';
+import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -19,6 +20,13 @@ export default function Gallery() {
     queryKey: ['galleryImages'],
     queryFn: () => listGalleries(),
   });
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
+
+  const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
+  const accentColor = settings.accent_color || DEFAULT_ACCENT;
 
   const defaultCategories = [
     { id: 'all', name: 'All', slug: 'all' },
@@ -81,12 +89,12 @@ export default function Gallery() {
       exit={{ opacity: 0 }}
     >
       {/* Hero Banner */}
-      <section className="relative h-[40vh] min-h-[300px] bg-[#1E3A8A] overflow-hidden">
+      <section className="relative h-[40vh] min-h-[300px] overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1920)' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A8A] via-[#1E3A8A]/80 to-transparent" />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${primaryColor}, ${withAlpha(primaryColor, 0.8, DEFAULT_PRIMARY)}, transparent)` }} />
         
         <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center">
           <motion.div
@@ -94,7 +102,7 @@ export default function Gallery() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <span className="inline-block px-4 py-2 bg-[#FACC15] text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: accentColor, color: primaryColor }}>
               Gallery
             </span>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 font-['Poppins']">
@@ -118,9 +126,10 @@ export default function Gallery() {
                 onClick={() => setSelectedCategory(category.slug)}
                 className={`px-6 py-3 rounded-full font-medium transition-all ${
                   selectedCategory === category.slug
-                    ? 'bg-[#1E3A8A] text-white shadow-lg'
+                    ? 'text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
                 }`}
+                style={selectedCategory === category.slug ? { backgroundColor: primaryColor } : undefined}
               >
                 {category.name}
               </button>
@@ -155,7 +164,7 @@ export default function Gallery() {
                     </div>
                   </div>
                   <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ZoomIn className="w-5 h-5 text-[#1E3A8A]" />
+                    <ZoomIn className="w-5 h-5" style={{ color: primaryColor }} />
                   </div>
                 </motion.div>
               ))}

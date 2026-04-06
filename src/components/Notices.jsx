@@ -5,7 +5,8 @@ import { Calendar, Search, Bell, Star, FileText, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { listNotices } from '@/api/adminClient';
+import { getSettings, listNotices } from '@/api/adminClient';
+import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 export default function Notices() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,6 +15,13 @@ export default function Notices() {
     queryKey: ['notices'],
     queryFn: () => listNotices(),
   });
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
+
+  const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
+  const accentColor = settings.accent_color || DEFAULT_ACCENT;
 
   const defaultNotices = [
     {
@@ -74,12 +82,12 @@ export default function Notices() {
       exit={{ opacity: 0 }}
     >
       {/* Hero Banner */}
-      <section className="relative h-[40vh] min-h-[300px] bg-[#1E3A8A] overflow-hidden">
+      <section className="relative h-[40vh] min-h-[300px] overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=1920)' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A8A] via-[#1E3A8A]/80 to-transparent" />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${primaryColor}, ${withAlpha(primaryColor, 0.8, DEFAULT_PRIMARY)}, transparent)` }} />
         
         <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center">
           <motion.div
@@ -87,7 +95,7 @@ export default function Notices() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <span className="inline-block px-4 py-2 bg-[#FACC15] text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: accentColor, color: primaryColor }}>
               Stay Updated
             </span>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 font-['Poppins']">
@@ -124,7 +132,7 @@ export default function Notices() {
           <div className="space-y-6">
             {isLoading ? (
               <div className="text-center py-12">
-                <div className="animate-spin w-12 h-12 border-4 border-[#1E3A8A] border-t-transparent rounded-full mx-auto" />
+                <div className="animate-spin w-12 h-12 border-4 border-t-transparent rounded-full mx-auto" style={{ borderColor: primaryColor, borderTopColor: 'transparent' }} />
               </div>
             ) : filteredNotices.length === 0 ? (
               <div className="text-center py-12">
@@ -140,20 +148,21 @@ export default function Notices() {
                   transition={{ delay: index * 0.05 }}
                   className={`relative bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer group ${
                     notice.is_highlighted
-                      ? 'border-l-4 border-l-[#FACC15]'
+                      ? 'border-l-4'
                       : 'border border-gray-100'
                   }`}
+                  style={notice.is_highlighted ? { borderLeftColor: accentColor } : undefined}
                 >
                   {notice.is_highlighted && (
-                    <div className="absolute -top-3 -right-3 w-10 h-10 bg-[#FACC15] rounded-full flex items-center justify-center shadow-lg">
-                      <Star className="w-5 h-5 text-[#1E3A8A]" fill="currentColor" />
+                    <div className="absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-lg" style={{ backgroundColor: accentColor }}>
+                      <Star className="w-5 h-5" style={{ color: primaryColor }} fill="currentColor" />
                     </div>
                   )}
 
                   <div className="flex flex-col md:flex-row gap-6">
                     {/* Date Badge */}
                     <div className="flex-shrink-0">
-                      <div className="w-20 h-20 bg-[#1E3A8A] rounded-xl flex flex-col items-center justify-center text-white">
+                      <div className="w-20 h-20 rounded-xl flex flex-col items-center justify-center text-white" style={{ backgroundColor: primaryColor }}>
                         <span className="text-3xl font-bold">
                           {format(new Date(notice.date), 'd')}
                         </span>
@@ -165,7 +174,7 @@ export default function Notices() {
 
                     {/* Content */}
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#1E3A8A] transition-colors font-['Poppins']">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors font-['Poppins']" style={{ color: notice.is_highlighted ? primaryColor : undefined }}>
                         {notice.title}
                       </h3>
                       <p className="text-gray-600 leading-relaxed">
@@ -177,7 +186,8 @@ export default function Notices() {
                           href={notice.attachment_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 mt-4 text-[#1E3A8A] font-semibold hover:underline"
+                          className="inline-flex items-center gap-2 mt-4 font-semibold hover:underline"
+                          style={{ color: primaryColor }}
                         >
                           <Download className="w-4 h-4" />
                           Download Attachment

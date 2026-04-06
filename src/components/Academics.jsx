@@ -7,7 +7,8 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { listAcademicPrograms } from '@/api/adminClient';
+import { getSettings, listAcademicPrograms } from '@/api/adminClient';
+import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 const PROGRAM_ICONS = [BookOpen, Lightbulb, GraduationCap, FlaskConical, Palette, Dumbbell, Users, Monitor];
 
@@ -16,6 +17,13 @@ export default function Academics() {
     queryKey: ['academicPrograms'],
     queryFn: () => listAcademicPrograms(),
   });
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
+
+  const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
+  const accentColor = settings.accent_color || DEFAULT_ACCENT;
 
   const defaultPrograms = [
     {
@@ -77,12 +85,12 @@ export default function Academics() {
       exit={{ opacity: 0 }}
     >
       {/* Hero Banner */}
-      <section className="relative h-[50vh] min-h-[400px] bg-[#1E3A8A] overflow-hidden">
+      <section className="relative h-[50vh] min-h-[400px] overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1920)' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A8A] via-[#1E3A8A]/80 to-transparent" />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${primaryColor}, ${withAlpha(primaryColor, 0.8, DEFAULT_PRIMARY)}, transparent)` }} />
         
         <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center">
           <motion.div
@@ -90,7 +98,7 @@ export default function Academics() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <span className="inline-block px-4 py-2 bg-[#FACC15] text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: accentColor, color: primaryColor }}>
               Academics
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 font-['Poppins']">
@@ -112,11 +120,11 @@ export default function Academics() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-block px-4 py-2 bg-[#1E3A8A]/10 text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(primaryColor, 0.1, DEFAULT_PRIMARY), color: primaryColor }}>
               Our Programs
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-['Poppins']">
-              Academic <span className="text-[#1E3A8A]">Programs</span>
+              Academic <span style={{ color: primaryColor }}>Programs</span>
             </h2>
           </motion.div>
 
@@ -130,13 +138,13 @@ export default function Academics() {
                 transition={{ delay: index * 0.1 }}
                 className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A8A] to-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(135deg, ${primaryColor}, ${withAlpha(primaryColor, 0.75, DEFAULT_PRIMARY)})` }} />
                 <div className="relative z-10">
-                  <div className="w-16 h-16 bg-[#FACC15] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white transition-colors">
-                    <program.icon className="w-8 h-8 text-[#1E3A8A]" />
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white transition-colors" style={{ backgroundColor: accentColor }}>
+                    <program.icon className="w-8 h-8" style={{ color: primaryColor }} />
                   </div>
                   {program.grades && (
-                    <span className="inline-block px-3 py-1 bg-[#1E3A8A]/10 text-[#1E3A8A] text-xs font-semibold rounded-full mb-4 group-hover:bg-white/20 group-hover:text-white transition-colors">
+                    <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-4 group-hover:bg-white/20 group-hover:text-white transition-colors" style={{ backgroundColor: withAlpha(primaryColor, 0.1, DEFAULT_PRIMARY), color: primaryColor }}>
                       {program.grades}
                     </span>
                   )}
@@ -150,7 +158,7 @@ export default function Academics() {
                     <div className="grid grid-cols-1 gap-2 mt-4">
                       {program.features.map((feature, i) => (
                         <div key={i} className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-[#FACC15] flex-shrink-0 group-hover:text-[#FACC15]" />
+                          <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />
                           <span className="text-gray-700 text-sm group-hover:text-gray-200 transition-colors">{feature}</span>
                         </div>
                       ))}
@@ -172,11 +180,11 @@ export default function Academics() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-block px-4 py-2 bg-[#FACC15]/20 text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT), color: primaryColor }}>
               CBSE Curriculum
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-['Poppins']">
-              Subjects <span className="text-[#1E3A8A]">Offered</span>
+              Subjects <span style={{ color: primaryColor }}>Offered</span>
             </h2>
           </motion.div>
 
@@ -190,7 +198,7 @@ export default function Academics() {
                 transition={{ delay: index * 0.1 }}
                 className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all"
               >
-                <h3 className="text-xl font-bold text-[#1E3A8A] mb-2 font-['Poppins']">
+                <h3 className="text-xl font-bold mb-2 font-['Poppins']" style={{ color: primaryColor }}>
                   {item.subject}
                 </h3>
                 <p className="text-gray-600">{item.details}</p>
@@ -201,7 +209,7 @@ export default function Academics() {
       </section>
 
       {/* Facilities */}
-      <section className="py-20 bg-[#1E3A8A]">
+      <section className="py-20" style={{ backgroundColor: primaryColor }}>
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -209,7 +217,7 @@ export default function Academics() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-block px-4 py-2 bg-[#FACC15]/20 text-[#FACC15] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT), color: accentColor }}>
               Infrastructure
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-white font-['Poppins']">
@@ -227,8 +235,8 @@ export default function Academics() {
                 transition={{ delay: index * 0.1 }}
                 className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover:bg-white/20 transition-all"
               >
-                <div className="w-16 h-16 bg-[#FACC15] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <facility.icon className="w-8 h-8 text-[#1E3A8A]" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: accentColor }}>
+                  <facility.icon className="w-8 h-8" style={{ color: primaryColor }} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2 font-['Poppins']">
                   {facility.title}
@@ -241,17 +249,18 @@ export default function Academics() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-[#FACC15]">
+      <section className="py-20" style={{ backgroundColor: accentColor }}>
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1E3A8A] mb-6 font-['Poppins']">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 font-['Poppins']" style={{ color: primaryColor }}>
             Ready to Begin Your Journey?
           </h2>
-          <p className="text-[#1E3A8A]/80 text-lg mb-8">
+          <p className="text-lg mb-8" style={{ color: withAlpha(primaryColor, 0.8, DEFAULT_PRIMARY) }}>
             Join Malhotra Public School and give your child the gift of quality education
           </p>
           <Link
             to={('/admissions')}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#1E3A8A] text-white font-semibold rounded-full hover:bg-[#1E40AF] transition-all hover:shadow-xl group"
+            className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-xl group"
+            style={{ backgroundColor: primaryColor }}
           >
             Apply Now
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

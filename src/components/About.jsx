@@ -7,13 +7,21 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { listStatistics } from '@/api/adminClient';
+import { getSettings, listStatistics } from '@/api/adminClient';
+import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 export default function About() {
   const { data: apiStats = [] } = useQuery({
     queryKey: ['stats'],
     queryFn: () => listStatistics(),
   });
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
+
+  const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
+  const accentColor = settings.accent_color || DEFAULT_ACCENT;
 
   // Default stats shown in About page (fallback when API has no data)
   const defaultStats = [
@@ -54,12 +62,12 @@ export default function About() {
       exit={{ opacity: 0 }}
     >
       {/* Hero Banner */}
-      <section className="relative h-[50vh] min-h-[400px] bg-[#1E3A8A] overflow-hidden">
+      <section className="relative h-[50vh] min-h-[400px] overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1920)' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A8A] via-[#1E3A8A]/80 to-transparent" />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${primaryColor}, ${withAlpha(primaryColor, 0.8, DEFAULT_PRIMARY)}, transparent)` }} />
         
         <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center">
           <motion.div
@@ -67,7 +75,7 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <span className="inline-block px-4 py-2 bg-[#FACC15] text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: accentColor, color: primaryColor }}>
               About Us
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 font-['Poppins']">
@@ -90,7 +98,7 @@ export default function About() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 font-['Poppins']">
-                Welcome to <span className="text-[#1E3A8A]">Malhotra Public School</span>
+                Welcome to <span style={{ color: primaryColor }}>Malhotra Public School</span>
               </h2>
               <p className="text-gray-600 text-lg mb-6 leading-relaxed">
                 Malhotra Public School is committed to academic excellence and character 
@@ -113,11 +121,11 @@ export default function About() {
               <div className="flex flex-wrap gap-6">
                 {displayStats.map((stat, index) => (
                   <div key={index} className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-[#FACC15] rounded-full flex items-center justify-center">
-                      <stat.icon className="w-6 h-6 text-[#1E3A8A]" />
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: accentColor }}>
+                      <stat.icon className="w-6 h-6" style={{ color: primaryColor }} />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-[#1E3A8A]">{stat.value}</p>
+                      <p className="text-2xl font-bold" style={{ color: primaryColor }}>{stat.value}</p>
                       <p className="text-sm text-gray-500">{stat.label}</p>
                     </div>
                   </div>
@@ -136,8 +144,8 @@ export default function About() {
                 alt="Students Learning"
                 className="rounded-2xl shadow-2xl"
               />
-              <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-[#FACC15]/20 rounded-2xl -z-10" />
-              <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#1E3A8A]/10 rounded-full -z-10" />
+              <div className="absolute -bottom-8 -left-8 w-48 h-48 rounded-2xl -z-10" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT) }} />
+              <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full -z-10" style={{ backgroundColor: withAlpha(primaryColor, 0.1, DEFAULT_PRIMARY) }} />
             </motion.div>
           </div>
         </div>
@@ -151,10 +159,11 @@ export default function About() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-white rounded-2xl p-8 shadow-lg border-t-4 border-[#1E3A8A]"
+              className="bg-white rounded-2xl p-8 shadow-lg border-t-4"
+              style={{ borderTopColor: primaryColor }}
             >
-              <div className="w-16 h-16 bg-[#1E3A8A] rounded-2xl flex items-center justify-center mb-6">
-                <Target className="w-8 h-8 text-[#FACC15]" />
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: primaryColor }}>
+                <Target className="w-8 h-8" style={{ color: accentColor }} />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4 font-['Poppins']">Our Mission</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -169,10 +178,11 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl p-8 shadow-lg border-t-4 border-[#FACC15]"
+              className="bg-white rounded-2xl p-8 shadow-lg border-t-4"
+              style={{ borderTopColor: accentColor }}
             >
-              <div className="w-16 h-16 bg-[#FACC15] rounded-2xl flex items-center justify-center mb-6">
-                <Eye className="w-8 h-8 text-[#1E3A8A]" />
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: accentColor }}>
+                <Eye className="w-8 h-8" style={{ color: primaryColor }} />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4 font-['Poppins']">Our Vision</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -194,11 +204,11 @@ export default function About() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-block px-4 py-2 bg-[#1E3A8A]/10 text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(primaryColor, 0.1, DEFAULT_PRIMARY), color: primaryColor }}>
               Our Foundation
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-['Poppins']">
-              Core <span className="text-[#1E3A8A]">Values</span>
+              Core <span style={{ color: primaryColor }}>Values</span>
             </h2>
           </motion.div>
 
@@ -212,8 +222,8 @@ export default function About() {
                 transition={{ delay: index * 0.1 }}
                 className="text-center p-6"
               >
-                <div className="w-20 h-20 bg-[#FACC15]/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <value.icon className="w-10 h-10 text-[#1E3A8A]" />
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT) }}>
+                  <value.icon className="w-10 h-10" style={{ color: primaryColor }} />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3 font-['Poppins']">{value.title}</h3>
                 <p className="text-gray-600">{value.description}</p>
@@ -224,7 +234,7 @@ export default function About() {
       </section>
 
       {/* Timeline */}
-      <section className="py-20 bg-[#1E3A8A]">
+      <section className="py-20" style={{ backgroundColor: primaryColor }}>
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -232,7 +242,7 @@ export default function About() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-block px-4 py-2 bg-[#FACC15]/20 text-[#FACC15] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT), color: accentColor }}>
               Our Journey
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-white font-['Poppins']">
@@ -242,7 +252,7 @@ export default function About() {
 
           <div className="relative">
             {/* Timeline Line */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-[#FACC15]/30 hidden lg:block" />
+            <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 hidden lg:block" style={{ backgroundColor: withAlpha(accentColor, 0.3, DEFAULT_ACCENT) }} />
 
             <div className="space-y-12">
               {milestones.map((milestone, index) => (
@@ -258,12 +268,12 @@ export default function About() {
                 >
                   <div className={`flex-1 ${index % 2 === 0 ? 'lg:text-right' : 'lg:text-left'}`}>
                     <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                      <span className="text-[#FACC15] font-bold text-2xl">{milestone.year}</span>
+                      <span className="font-bold text-2xl" style={{ color: accentColor }}>{milestone.year}</span>
                       <h3 className="text-xl font-bold text-white mt-2 font-['Poppins']">{milestone.title}</h3>
                       <p className="text-gray-300 mt-2">{milestone.description}</p>
                     </div>
                   </div>
-                  <div className="w-4 h-4 bg-[#FACC15] rounded-full flex-shrink-0 hidden lg:block" />
+                  <div className="w-4 h-4 rounded-full flex-shrink-0 hidden lg:block" style={{ backgroundColor: accentColor }} />
                   <div className="flex-1" />
                 </motion.div>
               ))}
@@ -273,17 +283,18 @@ export default function About() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-[#FACC15]">
+      <section className="py-20" style={{ backgroundColor: accentColor }}>
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1E3A8A] mb-6 font-['Poppins']">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 font-['Poppins']" style={{ color: primaryColor }}>
             Ready to Join Our Family?
           </h2>
-          <p className="text-[#1E3A8A]/80 text-lg mb-8">
+          <p className="text-lg mb-8" style={{ color: withAlpha(primaryColor, 0.8, DEFAULT_PRIMARY) }}>
             Take the first step towards a bright future for your child
           </p>
           <Link
             to={'/Admissions'}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#1E3A8A] text-white font-semibold rounded-full hover:bg-[#1E40AF] transition-all hover:shadow-xl group"
+            className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-xl group"
+            style={{ backgroundColor: primaryColor }}
           >
             Start Application
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

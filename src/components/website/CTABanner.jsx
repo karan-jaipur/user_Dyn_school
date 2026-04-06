@@ -3,11 +3,21 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Phone, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
-// import { createPageUrl } from '@/utils';
+import { getSettings } from '@/api/adminClient';
+import { useQuery } from '@tanstack/react-query';
 
 export default function CTABanner() {
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
+  const schoolName = settings.school_name || 'Malhotra Public School';
+  const phone = settings.phone || '+91 9876543210';
+  const primaryColor = settings.primary_color || '#1E3A8A';
+  const accentColor = settings.accent_color || '#FACC15';
+
   return (
-    <section className="py-20 bg-[#FACC15] relative overflow-hidden">
+    <section className="py-20 relative overflow-hidden" style={{ backgroundColor: accentColor }}>
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-20">
         <div 
@@ -19,7 +29,7 @@ export default function CTABanner() {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#1E3A8A]/10 rounded-full blur-3xl" />
+      <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl" style={{ backgroundColor: `${primaryColor}1A` }} />
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/20 rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
@@ -30,25 +40,27 @@ export default function CTABanner() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E3A8A] mb-6 font-['Poppins'] leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-['Poppins'] leading-tight" style={{ color: primaryColor }}>
               Ready to Give Your Child the Best Education?
             </h2>
-            <p className="text-[#1E3A8A]/80 text-lg mb-8">
-              Join the Malhotra Public School family today. Admissions are now open for the 
+            <p className="text-lg mb-8" style={{ color: `${primaryColor}CC` }}>
+              Join the {schoolName} family today. Admissions are now open for the 
               academic year 2026-27. Limited seats available.
             </p>
 
             <div className="flex flex-wrap gap-4">
               <Link
                 to={'/admissions'}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-[#1E3A8A] text-white font-semibold rounded-full hover:bg-[#1E40AF] transition-all hover:shadow-xl hover:-translate-y-1 group"
+                className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-xl hover:-translate-y-1 group"
+                style={{ backgroundColor: primaryColor }}
               >
                 Apply Now
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <a
-                href="tel:+919876543210"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#1E3A8A] font-semibold rounded-full hover:shadow-xl transition-all"
+                href={`tel:${phone}`}
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white font-semibold rounded-full hover:shadow-xl transition-all"
+                style={{ color: primaryColor }}
               >
                 <Phone className="w-5 h-5" />
                 Call Us Now
@@ -64,8 +76,8 @@ export default function CTABanner() {
             className="grid sm:grid-cols-2 gap-4"
           >
             <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <div className="w-12 h-12 bg-[#1E3A8A]/10 rounded-full flex items-center justify-center mb-4">
-                <Calendar className="w-6 h-6 text-[#1E3A8A]" />
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: `${primaryColor}1A` }}>
+                <Calendar className="w-6 h-6" style={{ color: primaryColor }} />
               </div>
               <h3 className="font-bold text-gray-900 mb-2 font-['Poppins']">
                 Admission Dates
@@ -76,18 +88,18 @@ export default function CTABanner() {
             </div>
 
             <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <div className="w-12 h-12 bg-[#1E3A8A]/10 rounded-full flex items-center justify-center mb-4">
-                <Phone className="w-6 h-6 text-[#1E3A8A]" />
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: `${primaryColor}1A` }}>
+                <Phone className="w-6 h-6" style={{ color: primaryColor }} />
               </div>
               <h3 className="font-bold text-gray-900 mb-2 font-['Poppins']">
                 Contact Admissions
               </h3>
               <p className="text-gray-600 text-sm">
-                +91 9876543210
+                {phone}
               </p>
             </div>
 
-            <div className="sm:col-span-2 bg-[#1E3A8A] rounded-2xl p-6 text-white">
+            <div className="sm:col-span-2 rounded-2xl p-6 text-white" style={{ backgroundColor: primaryColor }}>
               <h3 className="font-bold mb-2 font-['Poppins']">
                 🎓 Scholarship Available
               </h3>

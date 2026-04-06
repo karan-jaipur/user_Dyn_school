@@ -3,14 +3,21 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ZoomIn, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { listGalleries } from '@/api/adminClient';
+import { getSettings, listGalleries } from '@/api/adminClient';
 import { useQuery } from '@tanstack/react-query';
+import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 export default function GalleryPreview() {
   const { data: images = [] } = useQuery({
     queryKey: ['galleryImages'],
     queryFn: () => listGalleries(),
   });
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
+  const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
+  const accentColor = settings.accent_color || DEFAULT_ACCENT;
 
   const defaultImages = [
     { id: 1, image_url: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600', title: 'Campus View', category: 'Campus' },
@@ -33,11 +40,11 @@ export default function GalleryPreview() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 bg-[#FACC15]/20 text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+          <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT), color: primaryColor }}>
             Photo Gallery
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 font-['Poppins']">
-            Glimpses of <span className="text-[#1E3A8A]">School Life</span>
+            Glimpses of <span style={{ color: primaryColor }}>School Life</span>
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Explore the vibrant moments and memories captured at Malhotra Public School
@@ -66,9 +73,9 @@ export default function GalleryPreview() {
               />
               
               {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1E3A8A]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6" style={{ background: `linear-gradient(to top, ${withAlpha(primaryColor, 0.8, DEFAULT_PRIMARY)}, transparent, transparent)` }}>
                 <div className="text-white">
-                  <span className="text-xs font-semibold text-[#FACC15] uppercase tracking-wider">
+                  <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: accentColor }}>
                     {image.category}
                   </span>
                   <h4 className="text-lg font-bold mt-1">{image.title}</h4>
@@ -76,8 +83,8 @@ export default function GalleryPreview() {
               </div>
 
               {/* Zoom Icon */}
-              <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer hover:bg-[#FACC15]">
-                <ZoomIn className="w-5 h-5 text-[#1E3A8A]" />
+              <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+                <ZoomIn className="w-5 h-5" style={{ color: primaryColor }} />
               </div>
             </motion.div>
           ))}
@@ -92,7 +99,8 @@ export default function GalleryPreview() {
         >
           <Link
             to={'/Gallery'}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#1E3A8A] text-white font-semibold rounded-full hover:bg-[#1E40AF] transition-all hover:shadow-lg hover:-translate-y-0.5 group"
+            className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-lg hover:-translate-y-0.5 group"
+            style={{ backgroundColor: primaryColor }}
           >
             View Full Gallery
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

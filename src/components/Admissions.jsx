@@ -10,8 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { submitAdmissionApplication } from '@/api/adminClient';
-import { useMutation } from '@tanstack/react-query';
+import { getSettings, submitAdmissionApplication } from '@/api/adminClient';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 export default function Admissions() {
   const [formData, setFormData] = useState({
@@ -27,6 +28,13 @@ export default function Admissions() {
     address: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const { data: settings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: () => getSettings(),
+  });
+
+  const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
+  const accentColor = settings.accent_color || DEFAULT_ACCENT;
 
   const submitMutation = useMutation({
     mutationFn: (data) => submitAdmissionApplication(data),
@@ -77,7 +85,8 @@ export default function Admissions() {
           </p>
           <Button
             onClick={() => setSubmitted(false)}
-            className="bg-[#1E3A8A] hover:bg-[#1E40AF]"
+            className="text-white"
+            style={{ backgroundColor: primaryColor }}
           >
             Submit Another Application
           </Button>
@@ -93,12 +102,12 @@ export default function Admissions() {
       exit={{ opacity: 0 }}
     >
       {/* Hero Banner */}
-      <section className="relative h-[50vh] min-h-[400px] bg-[#1E3A8A] overflow-hidden">
+      <section className="relative h-[50vh] min-h-[400px] overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920)' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A8A] via-[#1E3A8A]/80 to-transparent" />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${primaryColor}, ${withAlpha(primaryColor, 0.8, DEFAULT_PRIMARY)}, transparent)` }} />
         
         <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center">
           <motion.div
@@ -106,7 +115,7 @@ export default function Admissions() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <span className="inline-block px-4 py-2 bg-[#FACC15] text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: accentColor, color: primaryColor }}>
               Admissions 2026-27
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 font-['Poppins']">
@@ -135,8 +144,8 @@ export default function Admissions() {
                 transition={{ delay: index * 0.1 }}
                 className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100"
               >
-                <div className="w-14 h-14 bg-[#FACC15] rounded-xl flex items-center justify-center mb-4">
-                  <item.icon className="w-7 h-7 text-[#1E3A8A]" />
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: accentColor }}>
+                  <item.icon className="w-7 h-7" style={{ color: primaryColor }} />
                 </div>
                 <h3 className="font-bold text-gray-900 mb-2 font-['Poppins']">{item.title}</h3>
                 <p className="text-gray-600">{item.value}</p>
@@ -155,16 +164,16 @@ export default function Admissions() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-block px-4 py-2 bg-[#1E3A8A]/10 text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(primaryColor, 0.1, DEFAULT_PRIMARY), color: primaryColor }}>
               How to Apply
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-['Poppins']">
-              Admission <span className="text-[#1E3A8A]">Process</span>
+              Admission <span style={{ color: primaryColor }}>Process</span>
             </h2>
           </motion.div>
 
           <div className="relative">
-            <div className="absolute top-8 left-0 right-0 h-1 bg-[#1E3A8A]/10 hidden lg:block" />
+            <div className="absolute top-8 left-0 right-0 h-1 hidden lg:block" style={{ backgroundColor: withAlpha(primaryColor, 0.1, DEFAULT_PRIMARY) }} />
             
             <div className="grid md:grid-cols-5 gap-6">
               {process.map((item, index) => (
@@ -176,7 +185,7 @@ export default function Admissions() {
                   transition={{ delay: index * 0.1 }}
                   className="relative text-center"
                 >
-                  <div className="w-16 h-16 bg-[#1E3A8A] rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10" style={{ backgroundColor: primaryColor }}>
                     <span className="text-2xl font-bold text-white">{item.step}</span>
                   </div>
                   <h3 className="font-bold text-gray-900 mb-2 font-['Poppins']">{item.title}</h3>
@@ -197,11 +206,11 @@ export default function Admissions() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="inline-block px-4 py-2 bg-[#FACC15]/20 text-[#1E3A8A] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4" style={{ backgroundColor: withAlpha(accentColor, 0.2, DEFAULT_ACCENT), color: primaryColor }}>
               Apply Now
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-['Poppins']">
-              Application <span className="text-[#1E3A8A]">Form</span>
+              Application <span style={{ color: primaryColor }}>Form</span>
             </h2>
           </motion.div>
 
@@ -332,7 +341,8 @@ export default function Admissions() {
 
             <Button 
               type="submit" 
-              className="w-full bg-[#1E3A8A] hover:bg-[#1E40AF] py-6 text-lg"
+              className="w-full py-6 text-lg text-white"
+              style={{ backgroundColor: primaryColor }}
               disabled={submitMutation.isPending}
             >
               {submitMutation.isPending ? 'Submitting...' : 'Submit Application'}
@@ -343,7 +353,7 @@ export default function Admissions() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 bg-[#1E3A8A]">
+      <section className="py-20" style={{ backgroundColor: primaryColor }}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             {[
@@ -358,12 +368,12 @@ export default function Admissions() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <div className="w-16 h-16 bg-[#FACC15] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-8 h-8 text-[#1E3A8A]" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: accentColor }}>
+                  <item.icon className="w-8 h-8" style={{ color: primaryColor }} />
                 </div>
                 <h3 className="font-bold text-white mb-2 font-['Poppins']">{item.title}</h3>
                 {item.link ? (
-                  <a href={item.link} className="text-gray-300 hover:text-[#FACC15] transition-colors">
+                  <a href={item.link} className="text-gray-300 transition-colors" style={{ color: '#d1d5db' }}>
                     {item.value}
                   </a>
                 ) : (

@@ -1,21 +1,21 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getUserPages } from "@/api/adminClient";
+import { getSettings, getUserPages } from "@/api/adminClient";
 
-function HeroSection({ section, title }) {
+function HeroSection({ section, title, primaryColor, accentColor }) {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[#1E3A8A] text-white">
+    <section className="relative min-h-screen overflow-hidden text-white" style={{ backgroundColor: primaryColor }}>
       {section.image && (
         <div
           className="absolute inset-0 bg-cover bg-center opacity-25"
           style={{ backgroundImage: `url(${section.image})` }}
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#132d73]/90 via-[#1E3A8A]/75 to-[#1E3A8A]/45" />
+      <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${primaryColor}E6, ${primaryColor}BF, ${primaryColor}73)` }} />
       <div className="relative mx-auto flex min-h-screen max-w-6xl items-center px-4 py-24">
         <div className="max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#FACC15]">Dynamic Page</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.25em]" style={{ color: accentColor }}>Dynamic Page</p>
         <h1 className="mt-4 text-5xl font-bold leading-tight md:text-6xl">{section.title || title}</h1>
         {section.subtitle && <p className="mt-4 max-w-3xl text-lg text-slate-200">{section.subtitle}</p>}
         {section.content && <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-100">{section.content}</p>}
@@ -33,6 +33,7 @@ function HeroSection({ section, title }) {
                       ? "bg-[#FACC15] text-[#1E3A8A] hover:bg-[#fde68a]"
                       : "border border-white/60 text-white hover:bg-white/10"
                   }`}
+                  style={index === 0 ? { backgroundColor: accentColor, color: primaryColor } : undefined}
                 >
                   {button.label}
                 </a>
@@ -45,6 +46,7 @@ function HeroSection({ section, title }) {
                       ? "bg-[#FACC15] text-[#1E3A8A] hover:bg-[#fde68a]"
                       : "border border-white/60 text-white hover:bg-white/10"
                   }`}
+                  style={index === 0 ? { backgroundColor: accentColor, color: primaryColor } : undefined}
                 >
                   {button.label}
                 </Link>
@@ -127,10 +129,10 @@ function ExtraSection({ section }) {
   );
 }
 
-function renderSection(pageTitle, section) {
+function renderSection(pageTitle, section, primaryColor, accentColor) {
   switch (section.type) {
     case "hero":
-      return <HeroSection key={section.order} section={section} title={pageTitle} />;
+      return <HeroSection key={section.order} section={section} title={pageTitle} primaryColor={primaryColor} accentColor={accentColor} />;
     case "content":
       return <ContentSection key={section.order} section={section} />;
     case "gallery":
@@ -148,6 +150,12 @@ export default function DynamicPage() {
     queryKey: ["user-pages"],
     queryFn: getUserPages,
   });
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettings,
+  });
+  const primaryColor = settings.primary_color || "#1E3A8A";
+  const accentColor = settings.accent_color || "#FACC15";
 
   if (isLoading) {
     return <div className="mx-auto max-w-6xl px-4 py-20 text-slate-500">Loading page...</div>;
@@ -166,5 +174,5 @@ export default function DynamicPage() {
     );
   }
 
-  return <div className="bg-slate-50">{page.sections.sort((a, b) => a.order - b.order).map((section) => renderSection(page.title, section))}</div>;
+  return <div className="bg-slate-50">{page.sections.sort((a, b) => a.order - b.order).map((section) => renderSection(page.title, section, primaryColor, accentColor))}</div>;
 }
