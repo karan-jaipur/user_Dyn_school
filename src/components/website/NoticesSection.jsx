@@ -5,10 +5,15 @@ import { Calendar, ArrowRight, Bell, FileText, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { getSettings, listNotices } from '@/api/adminClient';
+import { getSettings, getUserPages, listNotices } from '@/api/adminClient';
+import { getPageLink } from '@/lib/siteNavigation';
 import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 export default function NoticesSection() {
+  const { data: pages = [] } = useQuery({
+    queryKey: ['user-pages'],
+    queryFn: () => getUserPages(),
+  });
   const { data: notices = [] } = useQuery({
     queryKey: ['notices'],
     queryFn: () => listNotices(),
@@ -19,6 +24,7 @@ export default function NoticesSection() {
   });
   const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
   const accentColor = settings.accent_color || DEFAULT_ACCENT;
+  const noticesLink = getPageLink(pages, 'notices');
 
   const defaultNotices = [
     {
@@ -85,7 +91,7 @@ export default function NoticesSection() {
             </div>
 
             <Link
-              to={('/Notices')}
+              to={noticesLink}
               className="inline-flex items-center gap-2 font-semibold hover:gap-3 transition-all"
               style={{ color: primaryColor }}
             >

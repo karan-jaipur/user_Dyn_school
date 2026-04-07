@@ -292,7 +292,7 @@ export default function About() {
             Take the first step towards a bright future for your child
           </p>
           <Link
-            to={'/Admissions'}
+            to="/admissions"
             className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-xl group"
             style={{ backgroundColor: primaryColor }}
           >

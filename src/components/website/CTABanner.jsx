@@ -3,10 +3,15 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Phone, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getSettings } from '@/api/adminClient';
+import { getSettings, getUserPages } from '@/api/adminClient';
 import { useQuery } from '@tanstack/react-query';
+import { getPageLink } from '@/lib/siteNavigation';
 
 export default function CTABanner() {
+  const { data: pages = [] } = useQuery({
+    queryKey: ['user-pages'],
+    queryFn: () => getUserPages(),
+  });
   const { data: settings = {} } = useQuery({
     queryKey: ['site-settings'],
     queryFn: () => getSettings(),
@@ -15,6 +20,7 @@ export default function CTABanner() {
   const phone = settings.phone || '+91 9876543210';
   const primaryColor = settings.primary_color || '#1E3A8A';
   const accentColor = settings.accent_color || '#FACC15';
+  const admissionsLink = getPageLink(pages, 'admissions');
 
   return (
     <section className="py-20 relative overflow-hidden" style={{ backgroundColor: accentColor }}>
@@ -50,7 +56,7 @@ export default function CTABanner() {
 
             <div className="flex flex-wrap gap-4">
               <Link
-                to={'/admissions'}
+                to={admissionsLink}
                 className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-xl hover:-translate-y-1 group"
                 style={{ backgroundColor: primaryColor }}
               >

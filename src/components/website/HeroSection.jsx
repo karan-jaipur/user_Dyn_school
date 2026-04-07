@@ -3,12 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getSettings, listBanners } from '@/api/adminClient';
+import { getSettings, getUserPages, listBanners } from '@/api/adminClient';
 import { useQuery } from '@tanstack/react-query';
+import { getPageLink, normalizeSiteLink } from '@/lib/siteNavigation';
 
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  const { data: pages = [] } = useQuery({
+    queryKey: ['user-pages'],
+    queryFn: () => getUserPages(),
+  });
   const { data: banners = [] } = useQuery({
     queryKey: ['banners'],
     queryFn: () => listBanners(),
@@ -23,6 +28,8 @@ export default function HeroSection() {
   const tagline = settings.tagline || 'Learning Today, Leading Tomorrow';
   const primaryColor = settings.primary_color || '#1E3A8A';
   const accentColor = settings.accent_color || '#FACC15';
+  const defaultPrimaryLink = getPageLink(pages, 'admissions');
+  const defaultSecondaryLink = getPageLink(pages, 'about');
 
   useEffect(() => {
     if (activeBanners.length <= 1) return;
@@ -120,7 +127,7 @@ export default function HeroSection() {
                     className="flex flex-wrap gap-4"
                   >
                     <Link
-                      to={banner.cta_primary_link ? (banner.cta_primary_link.replace('/', '')) : 'admissions'}
+                      to={normalizeSiteLink(banner.cta_primary_link || defaultPrimaryLink)}
                       className="inline-flex items-center gap-2 px-8 py-4 font-semibold rounded-full transition-all hover:shadow-xl hover:-translate-y-1 group"
                       style={{ backgroundColor: accentColor, color: primaryColor }}
                     >
@@ -128,7 +135,7 @@ export default function HeroSection() {
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                     <Link
-                      to={banner.cta_secondary_link ? (banner.cta_secondary_link.replace('/', '')) : 'about'}
+                      to={normalizeSiteLink(banner.cta_secondary_link || defaultSecondaryLink)}
                       className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white text-white font-semibold rounded-full hover:bg-white transition-all"
                     >
                       {banner.cta_secondary_text || 'Learn More'}

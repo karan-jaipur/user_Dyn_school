@@ -3,8 +3,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Users, Lightbulb, Palette, Dumbbell, FlaskConical, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getSettings, listAcademicPrograms } from '@/api/adminClient';
+import { getSettings, getUserPages, listAcademicPrograms } from '@/api/adminClient';
 import { useQuery } from '@tanstack/react-query';
+import { getPageLink } from '@/lib/siteNavigation';
 import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 const iconMap = {
@@ -20,8 +21,13 @@ export default function AcademicsSection() {
     queryKey: ['site-settings'],
     queryFn: () => getSettings(),
   });
+  const { data: pages = [] } = useQuery({
+    queryKey: ['user-pages'],
+    queryFn: () => getUserPages(),
+  });
   const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
   const accentColor = settings.accent_color || DEFAULT_ACCENT;
+  const academicsLink = getPageLink(pages, 'academics');
 
   const defaultPrograms = [
     {
@@ -126,7 +132,7 @@ export default function AcademicsSection() {
 
                   {/* Learn More Link */}
                   <Link
-                    to={'/academics'}
+                    to={academicsLink}
                     className="inline-flex items-center gap-2 font-semibold transition-colors"
                     style={{ color: primaryColor }}
                   >
@@ -147,7 +153,7 @@ export default function AcademicsSection() {
           className="text-center mt-12"
         >
           <Link
-            to={'/academics'}
+            to={academicsLink}
             className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-lg hover:-translate-y-0.5 group"
             style={{ backgroundColor: primaryColor }}
           >

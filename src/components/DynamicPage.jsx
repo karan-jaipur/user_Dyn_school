@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getSettings, getUserPages } from "@/api/adminClient";
+import { isExternalLink, normalizeSiteLink } from "@/lib/siteNavigation";
 
 function HeroSection({ section, title, primaryColor, accentColor }) {
   return (
@@ -22,7 +23,7 @@ function HeroSection({ section, title, primaryColor, accentColor }) {
         {section.buttons?.length > 0 && (
           <div className="mt-8 flex flex-wrap gap-4">
             {section.buttons.map((button, index) =>
-              button.link.startsWith("http") ? (
+              isExternalLink(button.link) ? (
                 <a
                   key={`${button.label}-${index}`}
                   href={button.link}
@@ -40,7 +41,7 @@ function HeroSection({ section, title, primaryColor, accentColor }) {
               ) : (
                 <Link
                   key={`${button.label}-${index}`}
-                  to={button.link}
+                  to={normalizeSiteLink(button.link)}
                   className={`rounded-full px-6 py-3 font-semibold transition ${
                     index === 0
                       ? "bg-[#FACC15] text-[#1E3A8A] hover:bg-[#fde68a]"
@@ -91,7 +92,7 @@ function GallerySection({ section }) {
   );
 }
 
-function ExtraSection({ section }) {
+function ExtraSection({ section, primaryColor }) {
   const gridClass = section.layout === "grid-2" ? "lg:grid-cols-2" : "lg:grid-cols-1";
 
   return (
@@ -104,7 +105,7 @@ function ExtraSection({ section }) {
               {section.stats.map((stat, index) => (
                 <div key={`${stat.label}-${index}`} className="rounded-2xl bg-slate-50 p-5">
                   <p className="text-sm uppercase tracking-[0.15em] text-slate-500">{stat.label}</p>
-                  <p className="mt-3 text-3xl font-bold text-[#1E3A8A]">{stat.value}</p>
+                  <p className="mt-3 text-3xl font-bold" style={{ color: primaryColor }}>{stat.value}</p>
                 </div>
               ))}
             </div>
@@ -138,7 +139,7 @@ function renderSection(pageTitle, section, primaryColor, accentColor) {
     case "gallery":
       return <GallerySection key={section.order} section={section} />;
     case "extra":
-      return <ExtraSection key={section.order} section={section} />;
+      return <ExtraSection key={section.order} section={section} primaryColor={primaryColor} />;
     default:
       return null;
   }

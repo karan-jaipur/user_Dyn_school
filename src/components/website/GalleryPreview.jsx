@@ -3,11 +3,16 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ZoomIn, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getSettings, listGalleries } from '@/api/adminClient';
+import { getSettings, getUserPages, listGalleries } from '@/api/adminClient';
 import { useQuery } from '@tanstack/react-query';
+import { getPageLink } from '@/lib/siteNavigation';
 import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 
 export default function GalleryPreview() {
+  const { data: pages = [] } = useQuery({
+    queryKey: ['user-pages'],
+    queryFn: () => getUserPages(),
+  });
   const { data: images = [] } = useQuery({
     queryKey: ['galleryImages'],
     queryFn: () => listGalleries(),
@@ -18,6 +23,7 @@ export default function GalleryPreview() {
   });
   const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
   const accentColor = settings.accent_color || DEFAULT_ACCENT;
+  const galleryLink = getPageLink(pages, 'gallery');
 
   const defaultImages = [
     { id: 1, image_url: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600', title: 'Campus View', category: 'Campus' },
@@ -98,7 +104,7 @@ export default function GalleryPreview() {
           className="text-center mt-12"
         >
           <Link
-            to={'/Gallery'}
+            to={galleryLink}
             className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-lg hover:-translate-y-0.5 group"
             style={{ backgroundColor: primaryColor }}
           >

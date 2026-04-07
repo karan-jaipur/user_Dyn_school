@@ -138,7 +138,9 @@ export async function listNotices() {
     title: n.title,
     description: n.description,
     date: n.date,
-    is_highlighted: n.isHighlighted,
+    is_highlighted: n.isHighlighted === true,
+    is_published: n.isPublished !== false,
+    attachment_url: n.attachmentUrl || '',
   }));
 }
 
@@ -174,6 +176,8 @@ export async function listBanners() {
     image_url: b.image,
     cta_primary_text: b.buttonText,
     cta_primary_link: b.buttonLink,
+    cta_secondary_text: b.secondaryButtonText || '',
+    cta_secondary_link: b.secondaryButtonLink || '',
     order: b.order ?? 0,
     is_active: b.isActive,
   }));
@@ -188,6 +192,8 @@ export function createBanner(form) {
   fd.append('subtitle', form.subtitle || '');
   fd.append('buttonText', form.cta_primary_text || '');
   fd.append('buttonLink', form.cta_primary_link || '');
+  fd.append('secondaryButtonText', form.cta_secondary_text || '');
+  fd.append('secondaryButtonLink', form.cta_secondary_link || '');
   fd.append('order', String(form.order ?? 0));
   fd.append('isActive', String(form.is_active ?? true));
   return apiPost('/banners', fd, { isFormData: true });
@@ -202,6 +208,8 @@ export function updateBanner(id, form) {
   fd.append('subtitle', form.subtitle || '');
   fd.append('buttonText', form.cta_primary_text || '');
   fd.append('buttonLink', form.cta_primary_link || '');
+  fd.append('secondaryButtonText', form.cta_secondary_text || '');
+  fd.append('secondaryButtonLink', form.cta_secondary_link || '');
   fd.append('order', String(form.order ?? 0));
   fd.append('isActive', String(form.is_active ?? true));
   return apiPut(`/banners/${id}`, fd, { isFormData: true });
@@ -322,6 +330,10 @@ export async function getSettings() {
     accent_color: data.accentColor,
     text_color: data.textColor || '#0f172a',
     font_family: data.fontFamily || 'Inter, system-ui, sans-serif',
+    principal_name: data.principalName || '',
+    principal_qualification: data.principalQualification || '',
+    principal_message: data.principalMessage || '',
+    principal_photo: data.principalPhoto || '',
     meta_title: data.seoTitle,
     meta_description: data.seoDescription,
     meta_keywords: data.metaKeywords || '',
@@ -442,7 +454,13 @@ export function deletePage(id) {
 }
 
 export async function getUserPages() {
-  return apiGet('/pages/user');
+  const data = await apiGet('/pages/user');
+  return (data || []).map((page) => ({
+    ...page,
+    sections: Array.isArray(page.sections) ? page.sections : [],
+    slug: page.slug || '',
+    order: Number(page.order || 0),
+  }));
 }
 
 // Academic Programs

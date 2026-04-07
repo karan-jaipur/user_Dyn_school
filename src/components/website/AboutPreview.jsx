@@ -4,17 +4,24 @@ import { motion } from 'framer-motion';
 import { CheckCircle2, ArrowRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getSettings } from '@/api/adminClient';
+import { getSettings, getUserPages } from '@/api/adminClient';
+import { getPageLink } from '@/lib/siteNavigation';
 import { DEFAULT_ACCENT, DEFAULT_PRIMARY, withAlpha } from '@/lib/siteTheme';
 // import { createPageUrl } from '@/utils';
 
 export default function AboutPreview() {
+  const { data: pages = [] } = useQuery({
+    queryKey: ['user-pages'],
+    queryFn: () => getUserPages(),
+  });
   const { data: settings = {} } = useQuery({
     queryKey: ['site-settings'],
     queryFn: () => getSettings(),
   });
   const primaryColor = settings.primary_color || DEFAULT_PRIMARY;
   const accentColor = settings.accent_color || DEFAULT_ACCENT;
+  const aboutLink = getPageLink(pages, 'about');
+  const contactLink = getPageLink(pages, 'contact');
 
   const highlights = [
     'CBSE Affiliated School',
@@ -47,9 +54,9 @@ export default function AboutPreview() {
                 />
                 {/* Play Button Overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <button className="w-20 h-20 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform" style={{ backgroundColor: accentColor }}>
+                  <Link to={aboutLink} className="w-20 h-20 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform" style={{ backgroundColor: accentColor }}>
                     <Play className="w-8 h-8 ml-1" style={{ color: primaryColor }} fill="currentColor" />
-                  </button>
+                  </Link>
                 </div>
               </div>
 
@@ -120,7 +127,7 @@ export default function AboutPreview() {
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4">
               <Link
-                to={'about'}
+                to={aboutLink}
                 className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full transition-all hover:shadow-lg hover:-translate-y-0.5 group"
                 style={{ backgroundColor: primaryColor }}
               >
@@ -128,7 +135,7 @@ export default function AboutPreview() {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
-                to={'contact'}
+                to={contactLink}
                 className="inline-flex items-center gap-2 px-8 py-4 border-2 font-semibold rounded-full transition-all"
                 style={{ borderColor: primaryColor, color: primaryColor }}
               >

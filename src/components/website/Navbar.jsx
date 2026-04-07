@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone, Mail, GraduationCap } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getSettings, getUserPages } from "@/api/adminClient";
+import { getSettings, getUserPages, listNavItems } from "@/api/adminClient";
+import { buildNavigation, isExternalLink } from "@/lib/siteNavigation";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -11,6 +12,10 @@ export default function Navbar() {
   const { data: pages = [] } = useQuery({
     queryKey: ["user-pages"],
     queryFn: getUserPages,
+  });
+  const { data: navItems = [] } = useQuery({
+    queryKey: ["navItems"],
+    queryFn: listNavItems,
   });
   const { data: settings = {} } = useQuery({
     queryKey: ["site-settings"],
@@ -24,14 +29,7 @@ export default function Navbar() {
   const primaryColor = settings.primary_color || "#1E3A8A";
   const accentColor = settings.accent_color || "#FACC15";
 
-  const navItems = [
-    { id: "home", label: "Home", link: "/" },
-    ...pages.map((page) => ({
-      id: page._id,
-      label: page.title,
-      link: `/${page.slug}`,
-    })),
-  ];
+  const navigationItems = buildNavigation(navItems, pages).filter((item) => !item.parent_id);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 50);
@@ -53,7 +51,7 @@ export default function Navbar() {
               {email}
             </a>
           </div>
-          <div className="text-white/80">Home is fixed. Other pages come from the CMS.</div>
+          <div className="text-white/80">Admissions, notices, and CMS pages stay synced here.</div>
         </div>
       </div>
 
@@ -81,15 +79,27 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden lg:flex items-center gap-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.id}
-                  to={item.link}
-                  className="px-4 py-2 text-gray-700 font-medium"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navigationItems.map((item) =>
+                isExternalLink(item.link) ? (
+                  <a
+                    key={item.id}
+                    href={item.link}
+                    target={item.open_in_new_tab ? "_blank" : undefined}
+                    rel={item.open_in_new_tab ? "noreferrer" : undefined}
+                    className="px-4 py-2 text-gray-700 font-medium"
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.id}
+                    to={item.link}
+                    className="px-4 py-2 text-gray-700 font-medium"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              )}
             </div>
 
             <button className="lg:hidden" onClick={() => setIsMobileMenuOpen((open) => !open)}>
@@ -111,16 +121,29 @@ export default function Navbar() {
               className="lg:hidden bg-white border-t"
             >
               <div className="max-w-7xl mx-auto px-4 py-4">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    to={item.link}
-                    className="block py-3 text-gray-700 border-b"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {navigationItems.map((item) =>
+                  isExternalLink(item.link) ? (
+                    <a
+                      key={item.id}
+                      href={item.link}
+                      target={item.open_in_new_tab ? "_blank" : undefined}
+                      rel={item.open_in_new_tab ? "noreferrer" : undefined}
+                      className="block py-3 text-gray-700 border-b"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    <Link
+                      key={item.id}
+                      to={item.link}
+                      className="block py-3 text-gray-700 border-b"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  )
+                )}
               </div>
             </motion.div>
           )}

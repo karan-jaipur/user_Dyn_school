@@ -15,8 +15,9 @@ import {
   ChevronRight,
   Send,
 } from 'lucide-react';
-import { getFooter, getSettings, getUserPages } from '@/api/adminClient';
+import { getFooter, getSettings, getUserPages, listNavItems } from '@/api/adminClient';
 import { useQuery } from '@tanstack/react-query';
+import { buildNavigation, getPageLink, isExternalLink } from '@/lib/siteNavigation';
 
 export default function Footer() {
   const { data: footer = {} } = useQuery({
@@ -30,6 +31,10 @@ export default function Footer() {
   const { data: userPages = [] } = useQuery({
     queryKey: ['user-pages'],
     queryFn: () => getUserPages(),
+  });
+  const { data: navItems = [] } = useQuery({
+    queryKey: ['navItems'],
+    queryFn: () => listNavItems(),
   });
 
   const schoolName = settings.school_name || 'Malhotra Public School';
@@ -62,18 +67,18 @@ export default function Footer() {
             { platform: 'Youtube', url: '#' },
           ];
 
-  const quickLinks = [
-    { label: 'Home', link: '/' },
-    ...userPages.map((page) => ({
-      label: page.title,
-      link: `/${page.slug}`,
-    })),
-  ];
+  const navigationLinks = buildNavigation(navItems, userPages).filter((item) => !item.parent_id);
+  const quickLinks = navigationLinks.slice(0, 6);
+  const academicLinks = navigationLinks.filter((item) => item.link !== '/').slice(0, 5);
+  const contactLink = getPageLink(userPages, 'contact');
+  const [newsletterEmail, setNewsletterEmail] = React.useState('');
 
-  const academicLinks = userPages.slice(0, 5).map((page) => ({
-    label: page.title,
-    link: `/${page.slug}`,
-  }));
+  const handleNewsletterSubscribe = () => {
+    if (!newsletterEmail.trim()) return;
+    const subject = encodeURIComponent(`Newsletter Subscription - ${schoolName}`);
+    const body = encodeURIComponent(`Please subscribe this email to school updates: ${newsletterEmail.trim()}`);
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  };
 
   return (
     <footer className="text-white" style={{ backgroundColor: primaryColor }}>
@@ -90,9 +95,13 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="Enter your email"
+                value={newsletterEmail}
+                onChange={(event) => setNewsletterEmail(event.target.value)}
                 className="px-6 py-3 rounded-l-full w-full md:w-80 text-gray-800 focus:outline-none"
               />
               <button
+                type="button"
+                onClick={handleNewsletterSubscribe}
                 className="px-6 py-3 text-white rounded-r-full transition-colors flex items-center gap-2"
                 style={{ backgroundColor: primaryColor }}
               >
@@ -152,10 +161,17 @@ export default function Footer() {
               <ul className="space-y-3">
                 {quickLinks.map((link, index) => (
                   <li key={index}>
-                    <Link to={link.link} className="text-gray-300 flex items-center gap-2">
-                      <ChevronRight className="w-4 h-4" />
-                      {link.label}
-                    </Link>
+                    {isExternalLink(link.link) ? (
+                      <a href={link.link} target={link.open_in_new_tab ? '_blank' : undefined} rel={link.open_in_new_tab ? 'noreferrer' : undefined} className="text-gray-300 flex items-center gap-2">
+                        <ChevronRight className="w-4 h-4" />
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link to={link.link} className="text-gray-300 flex items-center gap-2">
+                        <ChevronRight className="w-4 h-4" />
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -166,10 +182,17 @@ export default function Footer() {
               <ul className="space-y-3">
                 {academicLinks.map((link, index) => (
                   <li key={index}>
-                    <Link to={link.link} className="text-gray-300 flex items-center gap-2">
-                      <ChevronRight className="w-4 h-4" />
-                      {link.label}
-                    </Link>
+                    {isExternalLink(link.link) ? (
+                      <a href={link.link} target={link.open_in_new_tab ? '_blank' : undefined} rel={link.open_in_new_tab ? 'noreferrer' : undefined} className="text-gray-300 flex items-center gap-2">
+                        <ChevronRight className="w-4 h-4" />
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link to={link.link} className="text-gray-300 flex items-center gap-2">
+                        <ChevronRight className="w-4 h-4" />
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -208,10 +231,10 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-400 text-sm">{copyrightText}</p>
           <div className="flex gap-6 text-sm">
-            <Link to="#" className="text-gray-400">
+            <Link to={contactLink} className="text-gray-400">
               Privacy Policy
             </Link>
-            <Link to="#" className="text-gray-400">
+            <Link to={contactLink} className="text-gray-400">
               Terms of Service
             </Link>
           </div>
